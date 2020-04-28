@@ -2,18 +2,20 @@
 #ifndef PLANNER_CONFIG_H
 #define PLANNER_CONFIG_H
 
+#include <vector>
+
 /**
 * The Config struct is a container for all of the data read from the config file.
 */
 struct Config 
 {
-	string monday;
-	string tuesday;
-	string wednesday;
-	string thursday;
-	string friday;
-	string satday;
-	string sunday;
+	vector<string> monday;
+	vector<string> tuesday;
+	vector<string> wednesday;
+	vector<string> thursday;
+	vector<string> friday;
+	vector<string> saturday;
+	vector<string> sunday;
 };
 
 
