@@ -125,6 +125,7 @@
   <ItemGroup>
     <ClInclude Include="config.h" />
     <ClInclude Include="planner.h" />
+    <ClInclude Include="tostrings.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="planner.cpp" />

@@ -1,10 +1,11 @@
 #pragma once
 #include "planner.h"
+#include "config.h"
 using namespace std;
 
 /**
 * Safely open the file with the given file name.
-* f_name: [string] the full path name of the file to open.
+* \param f_name: [string] the full path name of the file to open.
 * Return: [fstream] the file stream of the opened file.
 */
 fstream open_file(string f_name)
@@ -14,8 +15,7 @@ fstream open_file(string f_name)
 
 	// Provide an error message if the file fails to open.
 	if (file.fail()) {
-		cout << "The file " + f_name + " could not be opened." << endl;
-		return;
+		throw "The file " + f_name + " could not be opened.";
 	}
 
 	return file;
@@ -24,10 +24,11 @@ fstream open_file(string f_name)
 
 /**
 * Converts a string to a vector.
-* str: [string] the string to convert to a vector.
-* delim: [char] the delimeter to use to seperate entries.
+* \param str: [string] the string to convert to a vector.
+* \param delim: [char] the delimeter to use to seperate entries.
+* Return: [vector<string>] the vector representation of the string.
 */
-vector<string> str_to_vector(string str, char delim=',')
+vector<string> str_to_vector(string str, char delim)
 {
 	vector<string> str_vec;
 
@@ -53,6 +54,9 @@ vector<string> str_to_vector(string str, char delim=',')
 
 /**
 * Compares two vectors and returns everything in vector 1 that is not in vector 2.
+* \param day: [vector<string>] the tasks for the current day.
+* \param done: [vector<string>] the completed tasks for the current day.
+* Return: [vector<string>] the tasks that are not completed.
 */
 vector<string> compare_vec(vector<string> day, vector<string> done)
 {
@@ -83,7 +87,7 @@ vector<string> compare_vec(vector<string> day, vector<string> done)
 
 /**
 * Returns a Config struct with all of the data read from the config file.
-* config_file: [fstream] the file stream for the config file.
+* \param config_file: [fstream] the file stream for the config file.
 * Return: [Config] the data parsed from the config file.
 */
 Config get_config_data(fstream &config_file)
