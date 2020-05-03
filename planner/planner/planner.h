@@ -13,7 +13,7 @@ using namespace std;
 
 // File path constants.
 constexpr auto PLANNER_FILE_PATH = "C:/Users/lukas/OneDrive/Desktop/Planner.txt";
-constexpr auto CONFIG_FILE_PATH = "config.ini";
+constexpr auto CONFIG_FILE_PATH = "C:/Users/lukas/planner/planner/planner/config.ini";
 
 // Function declarations.
 fstream open_file(string f_name);

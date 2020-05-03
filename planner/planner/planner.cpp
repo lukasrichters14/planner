@@ -43,7 +43,10 @@ vector<string> str_to_vector(string str, char delim)
 		if (ch != delim) { temp_str += ch; }
 		
 		// Once the delimeter is found, add the string to the vector.
-		else { str_vec.push_back(temp_str); }
+		else { 
+			str_vec.push_back(temp_str); 
+			temp_str = "";
+		}
 	}
 	// Add the last element that was not added in the loop.
 	str_vec.push_back(temp_str);
