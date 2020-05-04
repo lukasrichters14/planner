@@ -1,11 +1,11 @@
 #pragma once
 #include "planner.h"
-#include "config.h"
+#include "structs.h"
 using namespace std;
 
 /**
 * Safely open the file with the given file name.
-* \param f_name: [string] the full path name of the file to open.
+* f_name: [string] the full path name of the file to open.
 * Return: [fstream] the file stream of the opened file.
 */
 fstream open_file(string f_name)
@@ -24,8 +24,8 @@ fstream open_file(string f_name)
 
 /**
 * Converts a string to a vector.
-* \param str: [string] the string to convert to a vector.
-* \param delim: [char] the delimeter to use to seperate entries.
+* str: [string] the string to convert to a vector.
+* delim: [char] the delimeter to use to seperate entries.
 * Return: [vector<string>] the vector representation of the string.
 */
 vector<string> str_to_vector(string str, char delim)
@@ -57,8 +57,8 @@ vector<string> str_to_vector(string str, char delim)
 
 /**
 * Compares two vectors and returns everything in vector 1 that is not in vector 2.
-* \param day: [vector<string>] the tasks for the current day.
-* \param done: [vector<string>] the completed tasks for the current day.
+* day: [vector<string>] the tasks for the current day.
+* done: [vector<string>] the completed tasks for the current day.
 * Return: [vector<string>] the tasks that are not completed.
 */
 vector<string> compare_vec(vector<string> day, vector<string> done)
@@ -90,7 +90,7 @@ vector<string> compare_vec(vector<string> day, vector<string> done)
 
 /**
 * Returns a Config struct with all of the data read from the config file.
-* \param config_file: [fstream] the file stream for the config file.
+* config_file: [fstream&] the file stream for the config file.
 * Return: [Config] the data parsed from the config file.
 */
 Config get_config_data(fstream &config_file)
@@ -103,11 +103,11 @@ Config get_config_data(fstream &config_file)
 	// Read each line from the file.
 	while (getline(config_file, str)) {
 		// No parsing required on comments on empty lines.
-		if (str.front() == ';' || str.empty()) {
+		if (str.empty() || str[0] == ';' ) {
 			continue;
 		} 
 		// Moved to a new section.
-		else if (str.front() == '[') {
+		else if (str[0] == '[') {
 			// Remove ']'.
 			section = str.substr(1, str.length() - 2);
 			line_num = 0;
@@ -120,7 +120,7 @@ Config get_config_data(fstream &config_file)
 				// Ensure that tasks that are done are not being added.
 				if (section == "done") {
 					vector<string> done = str_to_vector(str.substr(7));
-					config_data.monday = compare_vec(config_data.monday, done);
+					config_data.monday_done = done;
 				}
 				else {
 					config_data.monday = str_to_vector(str.substr(7));
@@ -131,11 +131,11 @@ Config get_config_data(fstream &config_file)
 			case 1:
 				// Ensure that tasks that are done are not being added.
 				if (section == "done") {
-					vector<string> done = str_to_vector(str.substr(7));
-					config_data.tuesday = compare_vec(config_data.tuesday, done);
+					vector<string> done = str_to_vector(str.substr(8));
+					config_data.tuesday_done = done;
 				}
 				else {
-					config_data.tuesday = str_to_vector(str.substr(7));
+					config_data.tuesday = str_to_vector(str.substr(8));
 				}
 				break;
 
@@ -143,11 +143,11 @@ Config get_config_data(fstream &config_file)
 			case 2:
 				// Ensure that tasks that are done are not being added.
 				if (section == "done") {
-					vector<string> done = str_to_vector(str.substr(7));
-					config_data.wednesday = compare_vec(config_data.wednesday, done);
+					vector<string> done = str_to_vector(str.substr(10));
+					config_data.wednesday_done = done;
 				}
 				else {
-					config_data.wednesday = str_to_vector(str.substr(7));
+					config_data.wednesday = str_to_vector(str.substr(10));
 				}
 				break;
 
@@ -155,11 +155,11 @@ Config get_config_data(fstream &config_file)
 			case 3:
 				// Ensure that tasks that are done are not being added.
 				if (section == "done") {
-					vector<string> done = str_to_vector(str.substr(7));
-					config_data.thursday = compare_vec(config_data.thursday, done);
+					vector<string> done = str_to_vector(str.substr(9));
+					config_data.thursday_done = done;
 				}
 				else {
-					config_data.thursday = str_to_vector(str.substr(7));
+					config_data.thursday = str_to_vector(str.substr(9));
 				}
 				break;
 
@@ -168,7 +168,7 @@ Config get_config_data(fstream &config_file)
 				// Ensure that tasks that are done are not being added.
 				if (section == "done") {
 					vector<string> done = str_to_vector(str.substr(7));
-					config_data.friday = compare_vec(config_data.friday, done);
+					config_data.friday_done = done;
 				}
 				else {
 					config_data.friday = str_to_vector(str.substr(7));
@@ -179,11 +179,11 @@ Config get_config_data(fstream &config_file)
 			case 5:
 				// Ensure that tasks that are done are not being added.
 				if (section == "done") {
-					vector<string> done = str_to_vector(str.substr(7));
-					config_data.saturday = compare_vec(config_data.saturday, done);
+					vector<string> done = str_to_vector(str.substr(9));
+					config_data.saturday_done = done;
 				}
 				else {
-					config_data.saturday = str_to_vector(str.substr(7));
+					config_data.saturday = str_to_vector(str.substr(9));
 				}
 				break;
 
@@ -192,7 +192,7 @@ Config get_config_data(fstream &config_file)
 				// Ensure that tasks that are done are not being added.
 				if (section == "done") {
 					vector<string> done = str_to_vector(str.substr(7));
-					config_data.sunday = compare_vec(config_data.sunday, done);
+					config_data.sunday_done = done;
 				}
 				else {
 					config_data.sunday = str_to_vector(str.substr(7));
@@ -206,6 +206,35 @@ Config get_config_data(fstream &config_file)
 	return config_data;
 }
 
+
+/**
+* Reads the planner file to see if edits need to be made to the config.
+* planner_file: [fstream&] the planner file.
+* config: [Config&] the config struct.
+*/
+void read_planner(fstream& planner_file, Config& config)
+{
+	string str, day, tasks;
+
+
+	while (getline(planner_file, str)) {
+		if (!str.empty()) { 
+			day = str.substr(0, 3);
+			// This could throw an error. Handle it.
+			tasks = str.substr(12);
+
+			//if (tasks.
+
+			if (day == "MON") {
+
+			}
+			else if (day == "TUE") {
+
+			}
+		}
+
+	}
+}
 
 /**
 * Entry point for the program.

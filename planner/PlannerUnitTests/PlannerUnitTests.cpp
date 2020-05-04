@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "CppUnitTest.h"
 #include "../planner/planner.h"
-#include "../planner/config.h"
+#include "../planner/structs.h"
 #include "../planner/tostrings.h"
 #include <vector>
 #include <string>
@@ -85,6 +85,33 @@ namespace PlannerUnitTests
 			solution = v1;
 			subject = compare_vec(v1, v4);
 			Assert::AreEqual(subject, solution);
+		}
+
+		TEST_METHOD(TestGetConfigData)
+		{
+			std::fstream file = open_file(CONFIG_FILE_PATH);
+			Config data, solution;
+
+			solution.monday = { "STT Lecture" };
+			solution.tuesday = { "331 homework" };
+			solution.wednesday = { "320 homework" };
+			solution.thursday = { "PHY homework" };
+			solution.friday = { "Nothing :)" };
+			solution.saturday = { "Read" };
+			solution.sunday = { "Nothing again :))" };
+			solution.monday_done = { "STT Lecture" };
+
+			data = get_config_data(file);
+
+			file.close();
+
+			Assert::AreEqual(data.monday, solution.monday);
+			Assert::AreEqual(data.tuesday, solution.tuesday);
+			Assert::AreEqual(data.wednesday, solution.wednesday);
+			Assert::AreEqual(data.thursday, solution.thursday);
+			Assert::AreEqual(data.friday, solution.friday);
+			Assert::AreEqual(data.saturday, solution.saturday);
+			Assert::AreEqual(data.sunday, solution.sunday);
 		}
 	};
 }

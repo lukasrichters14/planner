@@ -18,10 +18,10 @@
     <ClInclude Include="planner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="config.h">
+    <ClInclude Include="tostrings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tostrings.h">
+    <ClInclude Include="structs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

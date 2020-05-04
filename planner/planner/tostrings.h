@@ -7,7 +7,7 @@
 #include <vector>
 #include <locale>
 #include <codecvt>
-#include "config.h"
+#include "structs.h"
 
 namespace Microsoft
 {
@@ -26,6 +26,7 @@ namespace Microsoft
 						temp_str += ", ";
 					}
 					temp_str += s;
+					++i;
 				}
 				// Convert string to wstring.
 				std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
