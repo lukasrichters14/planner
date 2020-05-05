@@ -38,14 +38,22 @@ vector<string> str_to_vector(string str, char delim)
 	}
 
 	string temp_str;
+	bool delim_found = false;
 	for (char ch : str) {
 		// Add all characters before the delimeter to the string.
-		if (ch != delim) { temp_str += ch; }
+		if (ch != delim) {
+			// Allow for spaces between the delimeter and the next string.
+			if (!(delim_found && ch == ' ')) {
+				temp_str += ch;
+				delim_found = false;
+			}
+		}
 		
 		// Once the delimeter is found, add the string to the vector.
 		else { 
 			str_vec.push_back(temp_str); 
 			temp_str = "";
+			delim_found = true;
 		}
 	}
 	// Add the last element that was not added in the loop.
@@ -61,20 +69,20 @@ vector<string> str_to_vector(string str, char delim)
 * done: [vector<string>] the completed tasks for the current day.
 * Return: [vector<string>] the tasks that are not completed.
 */
-vector<string> compare_vec(vector<string> day, vector<string> done)
+vector<string> compare_vec(vector<string> v1, vector<string> v2)
 {
 	// Nothing to do with an empty comparison vector.
-	if (done.empty()) { return day; }
+	if (v2.empty()) { return v1; }
 
 	vector<string> ret_vec;
 	bool found = false;
 
-	for (string str1 : day) {
-		for (string str2 : done) {
+	for (string str1 : v1) {
+		for (string str2 : v2) {
 			// String was found.
 			if (str1 == str2) {
 				found = true;
-				continue;
+				break;
 			}
 		}
 		// If the string was not found, place it in the vector to return.
@@ -210,30 +218,60 @@ Config get_config_data(fstream &config_file)
 /**
 * Reads the planner file to see if edits need to be made to the config.
 * planner_file: [fstream&] the planner file.
-* config: [Config&] the config struct.
+* return: [Planner] the data from the planner.
 */
-void read_planner(fstream& planner_file, Config& config)
+Planner read_planner(fstream& planner_file)
 {
+	Planner planner;
 	string str, day, tasks;
+	int line = 0;
 
-
+	// Read from file.
 	while (getline(planner_file, str)) {
 		if (!str.empty()) { 
 			day = str.substr(0, 3);
-			// This could throw an error. Handle it.
-			tasks = str.substr(12);
-
-			//if (tasks.
-
-			if (day == "MON") {
-
+			// Get all of the tasks. The substring call could go out of bounds of the string,
+			// so catch the error and assign tasks the empty string.
+			try {
+				tasks = str.substr(12);
 			}
-			else if (day == "TUE") {
-
+			catch (...) {
+				tasks = "";
 			}
+
+			// Set the first day read from the planner file.
+			if (line == 0) {
+				planner.first = day;
+			}
+
+			// Get all the tasks for each day.
+			if (!tasks.empty()) {
+				if (day == "MON") {
+					planner.monday = str_to_vector(tasks);
+				}
+				else if (day == "TUE") {
+					planner.tuesday = str_to_vector(tasks);
+				}
+				else if (day == "WED") {
+					planner.wednesday = str_to_vector(tasks);
+				}
+				else if (day == "THU") {
+					planner.thursday = str_to_vector(tasks);
+				}
+				else if (day == "FRI") {
+					planner.friday = str_to_vector(tasks);
+				}
+				else if (day == "SAT") {
+					planner.saturday = str_to_vector(tasks);
+				}
+				else if (day == "SUN") {
+					planner.sunday = str_to_vector(tasks);
+				}
+			}
+			++line;
 		}
-
 	}
+	return planner;
 }
 
 /**
@@ -247,6 +285,8 @@ int main()
 	
 	// Parse config file.
 	Config config_data = get_config_data(config_file);
+	// Parse planner file.
+	Planner planner_data = read_planner(planner_file);
 
 
 	// Close all opened files.

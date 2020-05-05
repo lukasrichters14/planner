@@ -54,7 +54,7 @@ namespace PlannerUnitTests
 		TEST_METHOD(TestStringToVector)
 		{
 			// String with ',' delimeter.
-			std::string test = "hello,world";
+			std::string test = "hello, world";
 			std::vector<std::string> solution, subject;
 			solution.push_back("hello");
 			solution.push_back("world");
@@ -92,7 +92,7 @@ namespace PlannerUnitTests
 			std::fstream file = open_file(CONFIG_FILE_PATH);
 			Config data, solution;
 
-			solution.monday = { "STT Lecture" };
+			solution.monday = { "STT Lecture"};
 			solution.tuesday = { "331 homework" };
 			solution.wednesday = { "320 homework" };
 			solution.thursday = { "PHY homework" };
@@ -102,6 +102,32 @@ namespace PlannerUnitTests
 			solution.monday_done = { "STT Lecture" };
 
 			data = get_config_data(file);
+
+			file.close();
+
+			Assert::AreEqual(data.monday, solution.monday);
+			Assert::AreEqual(data.tuesday, solution.tuesday);
+			Assert::AreEqual(data.wednesday, solution.wednesday);
+			Assert::AreEqual(data.thursday, solution.thursday);
+			Assert::AreEqual(data.friday, solution.friday);
+			Assert::AreEqual(data.saturday, solution.saturday);
+			Assert::AreEqual(data.sunday, solution.sunday);
+		}
+
+		TEST_METHOD(TestReadPlanner) 
+		{
+			std::fstream file = open_file(PLANNER_FILE_PATH);
+			Planner data, solution;
+
+			solution.monday = { "Stuff1", "Stuff2" };
+			solution.tuesday = { "Stuff3" };
+			solution.wednesday = { "Stuff4" };
+			solution.thursday = { "Stuff5" };
+			solution.friday = { "Stuff6" };
+			solution.saturday = { "Stuff7" };
+			solution.sunday = { "Stuff8" };
+
+			data = read_planner(file);
 
 			file.close();
 

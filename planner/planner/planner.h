@@ -19,8 +19,7 @@ constexpr auto CONFIG_FILE_PATH = "C:/Users/lukas/planner/planner/planner/config
 fstream open_file(string f_name);
 Config get_config_data(fstream& config_file);
 vector<string> str_to_vector(string str, char delim=',');
-vector<string> compare_vec(vector<string> day, vector<string> done);
-void read_planner(fstream& planner_file, Config& config);
-Planner get_planner_data(fstream& planner_file);
+vector<string> compare_vec(vector<string> v1, vector<string> v2);
+Planner read_planner(fstream& planner_file);
 
 #endif

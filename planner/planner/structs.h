@@ -35,6 +35,7 @@ struct Config
 */
 struct Planner
 {
+	string first;
 	vector<string> monday;
 	vector<string> tuesday;
 	vector<string> wednesday;
