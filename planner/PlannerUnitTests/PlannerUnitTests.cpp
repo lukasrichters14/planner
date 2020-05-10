@@ -139,5 +139,12 @@ namespace PlannerUnitTests
 			Assert::AreEqual(data.saturday, solution.saturday);
 			Assert::AreEqual(data.sunday, solution.sunday);
 		}
+
+		TEST_METHOD(TestVectorToString)
+		{
+			std::vector<std::string> vec = { "Luke", "I", "am", "your", "father" };
+			std::string str = "Luke, I, am, your, father";
+			Assert::AreEqual(str, vector_to_str(vec));
+		}
 	};
 }

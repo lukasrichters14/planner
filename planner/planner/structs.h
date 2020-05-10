@@ -43,6 +43,37 @@ struct Planner
 	vector<string> friday;
 	vector<string> saturday;
 	vector<string> sunday;
+
+	// Member functions.
+
+	/**
+	Returns the vector at the given day.
+	day: [string] the day to get the vector at.
+	Return: [vector<string>] the vector at the given day.
+	*/
+	vector<string> get_day(string day) {
+		if (day == "MON") {
+			return monday;
+		}
+		else if (day == "TUE") {
+			return tuesday;
+		}
+		else if (day == "WED") {
+			return wednesday;
+		}
+		else if (day == "THU") {
+			return thursday;
+		}
+		else if (day == "FRI") {
+			return friday;
+		}
+		else if (day == "SAT") {
+			return saturday;
+		}
+		else if (day == "SUN") {
+			return sunday;
+		}
+	}
 };
 
 

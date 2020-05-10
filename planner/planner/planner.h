@@ -21,5 +21,11 @@ Config get_config_data(fstream& config_file);
 vector<string> str_to_vector(string str, char delim=',');
 vector<string> compare_vec(vector<string> v1, vector<string> v2);
 Planner read_planner(fstream& planner_file);
+void generate_data(Config& config, Planner& planner);
+void write_to_config(fstream& config_file, Config& config);
+string vector_to_str(vector<string> vec);
+void write_to_planner(fstream& planner_file, Planner& planner);
+string day_to_str(int day);
+bool is_special_month(int month);
 
 #endif

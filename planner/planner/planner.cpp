@@ -4,9 +4,9 @@
 using namespace std;
 
 /**
-* Safely open the file with the given file name.
-* f_name: [string] the full path name of the file to open.
-* Return: [fstream] the file stream of the opened file.
+Safely opens the file with the given file name.
+f_name: [string] the full path name of the file to open.
+Return: [fstream] the file stream of the opened file.
 */
 fstream open_file(string f_name)
 {
@@ -23,10 +23,10 @@ fstream open_file(string f_name)
 
 
 /**
-* Converts a string to a vector.
-* str: [string] the string to convert to a vector.
-* delim: [char] the delimeter to use to seperate entries.
-* Return: [vector<string>] the vector representation of the string.
+Converts a string to a vector.
+str: [string] the string to convert to a vector.
+delim: [char] the delimeter to use to seperate entries.
+Return: [vector<string>] the vector representation of the string.
 */
 vector<string> str_to_vector(string str, char delim)
 {
@@ -64,10 +64,10 @@ vector<string> str_to_vector(string str, char delim)
 
 
 /**
-* Compares two vectors and returns everything in vector 1 that is not in vector 2.
-* day: [vector<string>] the tasks for the current day.
-* done: [vector<string>] the completed tasks for the current day.
-* Return: [vector<string>] the tasks that are not completed.
+Compares two vectors and returns everything in vector 1 that is not in vector 2.
+v1: [vector<string>] the first vector.
+v2: [vector<string>] the second vector.
+Return: [vector<string>] vector1 - vector2 (set difference).
 */
 vector<string> compare_vec(vector<string> v1, vector<string> v2)
 {
@@ -97,9 +97,9 @@ vector<string> compare_vec(vector<string> v1, vector<string> v2)
 
 
 /**
-* Returns a Config struct with all of the data read from the config file.
-* config_file: [fstream&] the file stream for the config file.
-* Return: [Config] the data parsed from the config file.
+Returns a Config struct with all of the data read from the config file.
+config_file: [fstream&] the file stream for the config file.
+Return: [Config] the data parsed from the config file.
 */
 Config get_config_data(fstream &config_file)
 {
@@ -125,7 +125,6 @@ Config get_config_data(fstream &config_file)
 		switch (line_num) {
 			// Monday.
 			case 0:
-				// Ensure that tasks that are done are not being added.
 				if (section == "done") {
 					vector<string> done = str_to_vector(str.substr(7));
 					config_data.monday_done = done;
@@ -137,7 +136,6 @@ Config get_config_data(fstream &config_file)
 
 			// Tuesday.
 			case 1:
-				// Ensure that tasks that are done are not being added.
 				if (section == "done") {
 					vector<string> done = str_to_vector(str.substr(8));
 					config_data.tuesday_done = done;
@@ -149,7 +147,6 @@ Config get_config_data(fstream &config_file)
 
 			// Wednesday.
 			case 2:
-				// Ensure that tasks that are done are not being added.
 				if (section == "done") {
 					vector<string> done = str_to_vector(str.substr(10));
 					config_data.wednesday_done = done;
@@ -161,7 +158,6 @@ Config get_config_data(fstream &config_file)
 
 			// Thursday.
 			case 3:
-				// Ensure that tasks that are done are not being added.
 				if (section == "done") {
 					vector<string> done = str_to_vector(str.substr(9));
 					config_data.thursday_done = done;
@@ -173,7 +169,6 @@ Config get_config_data(fstream &config_file)
 
 			// Friday.
 			case 4:
-				// Ensure that tasks that are done are not being added.
 				if (section == "done") {
 					vector<string> done = str_to_vector(str.substr(7));
 					config_data.friday_done = done;
@@ -185,7 +180,6 @@ Config get_config_data(fstream &config_file)
 
 			// Saturday.
 			case 5:
-				// Ensure that tasks that are done are not being added.
 				if (section == "done") {
 					vector<string> done = str_to_vector(str.substr(9));
 					config_data.saturday_done = done;
@@ -197,7 +191,6 @@ Config get_config_data(fstream &config_file)
 
 			// Sunday.
 			case 6:
-				// Ensure that tasks that are done are not being added.
 				if (section == "done") {
 					vector<string> done = str_to_vector(str.substr(7));
 					config_data.sunday_done = done;
@@ -216,9 +209,9 @@ Config get_config_data(fstream &config_file)
 
 
 /**
-* Reads the planner file to see if edits need to be made to the config.
-* planner_file: [fstream&] the planner file.
-* return: [Planner] the data from the planner.
+Reads the planner file to see if edits need to be made to the config.
+planner_file: [fstream&] the planner file.
+return: [Planner] the data from the planner.
 */
 Planner read_planner(fstream& planner_file)
 {
@@ -275,7 +268,264 @@ Planner read_planner(fstream& planner_file)
 }
 
 /**
-* Entry point for the program.
+Converts an integer day to a string representation of that day.
+day: [int] the number of days since Sunday.
+Return: [string] the day of the week.
+*/
+string day_to_str(int day)
+{
+	string day_str;
+
+	switch (day) {
+	case 0:
+		day_str = "SUN";
+		break;
+
+	case 1:
+		day_str = "MON";
+		break;
+
+	case 2:
+		day_str = "TUE";
+		break;
+
+	case 3:
+		day_str = "WED";
+		break;
+
+	case 4:
+		day_str = "THU";
+		break;
+
+	case 5:
+		day_str = "FRI";
+		break;
+
+	case 6:
+		day_str = "SAT";
+		break;
+	}
+
+	return day_str;
+}
+
+/**
+Modifies the config and planner structs to hold the new data relevant to each file.
+config: [Config&] the config data.
+planner: [Planner&] the planner data.
+*/
+void generate_data(Config& config, Planner& planner) {
+	// Get date information.
+	int day;
+	string day_str;
+	time_t now = time(0);
+	tm time_info; 
+	localtime_s(&time_info, &now);
+
+	day = time_info.tm_wday;  // Days since sunday.
+
+	// Convert the day of the week to a string.
+	day_str = day_to_str(day);
+
+	// Config file is edited to reflect all tasks that have been finished.
+	config.monday_done = compare_vec(config.monday, planner.monday);
+	config.tuesday_done = compare_vec(config.tuesday, planner.tuesday);
+	config.wednesday_done = compare_vec(config.wednesday, planner.wednesday);
+	config.thursday_done = compare_vec(config.thursday, planner.thursday);
+	config.friday_done = compare_vec(config.friday, planner.friday);
+	config.saturday_done = compare_vec(config.saturday, planner.saturday);
+	config.sunday_done = compare_vec(config.sunday, planner.sunday);
+
+	// Planner needs to be reset (the first entry in the planner is yesterday).
+	if (day_str != planner.first) {
+		if (planner.first == "MON") {
+			config.monday_done = {};
+		}
+		else if (planner.first == "TUE") {
+			config.tuesday_done = {};
+		}
+		else if (planner.first == "WED") {
+			config.wednesday_done = {};
+		}
+		else if (planner.first == "THU") {
+			config.thursday_done = {};
+		}
+		else if (planner.first == "FRI") {
+			config.friday_done = {};
+		}
+		else if (planner.first == "SAT") {
+			config.saturday_done = {};
+		}
+		else if (planner.first == "SUN") {
+			config.sunday_done = {};
+		}
+	}
+
+	// Set planner fields to what still needs to be done.
+	planner.monday = compare_vec(config.monday, config.monday_done);
+	planner.tuesday = compare_vec(config.tuesday, config.tuesday_done);
+	planner.wednesday = compare_vec(config.wednesday, config.wednesday_done);
+	planner.thursday = compare_vec(config.thursday, config.thursday_done);
+	planner.friday = compare_vec(config.friday, config.friday_done);
+	planner.saturday = compare_vec(config.saturday, config.saturday_done);
+	planner.sunday = compare_vec(config.sunday, config.sunday_done);
+}
+
+/**
+Converts a vector to a string.
+vec: [vector<string>] the vector to convert to a string.
+Return: [string] the string representation of the vector.
+*/
+string vector_to_str(vector<string> vec) 
+{
+	int i = 0;
+	string str;
+	for (auto e : vec) {
+		// Add ", " before each element aside from the first.
+		if (i != 0) {
+			str += ", ";
+		}
+		// Add the element to the string.
+		str += e;
+		i++;
+	}
+	return str;
+}
+
+/**
+Writes the data from the config struct to the config file.
+config_file: [fstream&] the config file stream.
+config: [Config&] the config struct.
+*/
+void write_to_config(fstream& config_file, Config& config)
+{
+	// Unfinished section.
+	config_file << "[unfinished]\n";
+	config_file << "monday=" + vector_to_str(config.monday) + "\n";
+	config_file << "tuesday=" + vector_to_str(config.tuesday) + "\n";
+	config_file << "wednesday=" + vector_to_str(config.wednesday) + "\n";
+	config_file << "thursday=" + vector_to_str(config.thursday) + "\n";
+	config_file << "friday=" + vector_to_str(config.friday) + "\n";
+	config_file << "saturday=" + vector_to_str(config.saturday) + "\n";
+	config_file << "sunday=" + vector_to_str(config.sunday) + "\n";
+
+	// Done section.
+	config_file << "\n[done]\n";
+	config_file << "monday=" + vector_to_str(config.monday_done) + "\n";
+	config_file << "tuesday=" + vector_to_str(config.tuesday_done) + "\n";
+	config_file << "wednesday=" + vector_to_str(config.wednesday_done) + "\n";
+	config_file << "thursday=" + vector_to_str(config.thursday_done) + "\n";
+	config_file << "friday=" + vector_to_str(config.friday_done) + "\n";
+	config_file << "saturday=" + vector_to_str(config.saturday_done) + "\n";
+	config_file << "sunday=" + vector_to_str(config.sunday_done) + "\n";
+}
+
+/**
+Determines if the given month has 31 days in it.
+month: [int] the month since January (0-11).
+*/
+bool is_special_month(int month) {
+	if (month > 11 || month < 0) {
+		throw "Month must be between 0 and 11 inclusive.";
+	}
+
+	switch (month) {
+	// January.
+	case 0:
+		return true;
+
+	// March.
+	case 2:
+		return true;
+
+	// May.
+	case 4:
+		return true;
+
+	// July.
+	case 6:
+		return true;
+
+	// August.
+	case 7:
+		return true;
+
+	// October.
+	case 9:
+		return true;
+
+	// December.
+	case 11:
+		return true;
+	}
+
+	return false;
+}
+
+
+/**
+Writes the data from the planner struct to the planner file.
+planner_file: [fstream&] the planner file stream.
+planner: [Planner&] the planner struct.
+*/
+void write_to_planner(fstream& planner_file, Planner& planner)
+{
+	int day, date, month, year;
+	string day_str;
+
+	// Get date information.
+	time_t now = time(0);
+	tm time_info;
+	localtime_s(&time_info, &now);
+
+	day = time_info.tm_wday;  // Days since sunday.
+	date = time_info.tm_mday;  // Day of month (1-31).
+	month = time_info.tm_mon;  // Month since January (0-11).
+	year = time_info.tm_year + 1900;  // Year since 1900.
+
+	for (int i = 0; i < 7; i++) {
+		// Ensure the day never goes above 6 (stays an offical day).
+		if (day > 6) {
+			day = 0;
+		}
+		// Account for February.
+		if (month == 1 && date > 28) {
+			// Check for leap year.
+			if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) {
+				if (date > 29) {
+					month++;
+					date = 1;
+				}
+			}
+			else {
+				month++;
+				date = 1;
+			}
+		}
+		// Ensure date is legal.
+		if (date > 30) {
+			if (date > 31) {
+				month++;
+				date = 1;
+			}
+			else if (!is_special_month(month)){
+				month++;
+				date = 1;
+			}
+		}
+		// Convert day to string.
+		day_str = day_to_str(day);
+		// Write to planner.
+		// Format: DAY (MONTH/DATE): Tasks.
+		planner_file << day_str + " (" + to_string(month) + "/" + to_string(day) + "): " + vector_to_str(planner.get_day(day_str));
+		day++;
+		date++;
+	}
+}
+
+
+/**
+Entry point for the program.
 */
 int main()
 {
@@ -288,8 +538,15 @@ int main()
 	// Parse planner file.
 	Planner planner_data = read_planner(planner_file);
 
+	// Compare data between config and planner.
+	generate_data(config_data, planner_data);
+
+	// Write and close config file.
+	write_to_config(config_file, config_data);
+	config_file.close();
+
+
 
 	// Close all opened files.
 	planner_file.close();
-	config_file.close();
 }
