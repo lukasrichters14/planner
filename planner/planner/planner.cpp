@@ -315,9 +315,11 @@ config: [Config&] the config data.
 planner: [Planner&] the planner data.
 */
 void generate_data(Config& config, Planner& planner) {
-	// Get date information.
 	int day;
 	string day_str;
+	vector<string> unfinished;
+
+	// Get date information.
 	time_t now = time(0);
 	tm time_info; 
 	localtime_s(&time_info, &now);
@@ -340,24 +342,31 @@ void generate_data(Config& config, Planner& planner) {
 	if (day_str != planner.first) {
 		if (planner.first == "MON") {
 			config.monday_done = {};
+			unfinished = planner.monday;
 		}
 		else if (planner.first == "TUE") {
 			config.tuesday_done = {};
+			unfinished = planner.tuesday;
 		}
 		else if (planner.first == "WED") {
 			config.wednesday_done = {};
+			unfinished = planner.wednesday;
 		}
 		else if (planner.first == "THU") {
 			config.thursday_done = {};
+			unfinished = planner.thursday;
 		}
 		else if (planner.first == "FRI") {
 			config.friday_done = {};
+			unfinished = planner.friday;
 		}
 		else if (planner.first == "SAT") {
 			config.saturday_done = {};
+			unfinished = planner.saturday;
 		}
 		else if (planner.first == "SUN") {
 			config.sunday_done = {};
+			unfinished = planner.sunday;
 		}
 	}
 
@@ -369,6 +378,9 @@ void generate_data(Config& config, Planner& planner) {
 	planner.friday = compare_vec(config.friday, config.friday_done);
 	planner.saturday = compare_vec(config.saturday, config.saturday_done);
 	planner.sunday = compare_vec(config.sunday, config.sunday_done);
+
+	// Add anything that was not finished yesterday (if applicable).
+	planner.append_day(day_str, unfinished);
 }
 
 /**
@@ -401,23 +413,23 @@ void write_to_config(fstream& config_file, Config& config)
 {
 	// Unfinished section.
 	config_file << "[unfinished]\n";
-	config_file << "monday=" + vector_to_str(config.monday) + "\n";
-	config_file << "tuesday=" + vector_to_str(config.tuesday) + "\n";
-	config_file << "wednesday=" + vector_to_str(config.wednesday) + "\n";
-	config_file << "thursday=" + vector_to_str(config.thursday) + "\n";
-	config_file << "friday=" + vector_to_str(config.friday) + "\n";
-	config_file << "saturday=" + vector_to_str(config.saturday) + "\n";
-	config_file << "sunday=" + vector_to_str(config.sunday) + "\n";
+	config_file << "monday=" << vector_to_str(config.monday) << "\n";
+	config_file << "tuesday=" << vector_to_str(config.tuesday) << "\n";
+	config_file << "wednesday=" << vector_to_str(config.wednesday) << "\n";
+	config_file << "thursday=" << vector_to_str(config.thursday) << "\n";
+	config_file << "friday=" << vector_to_str(config.friday) << "\n";
+	config_file << "saturday=" << vector_to_str(config.saturday) << "\n";
+	config_file << "sunday=" << vector_to_str(config.sunday) << "\n";
 
 	// Done section.
 	config_file << "\n[done]\n";
-	config_file << "monday=" + vector_to_str(config.monday_done) + "\n";
-	config_file << "tuesday=" + vector_to_str(config.tuesday_done) + "\n";
-	config_file << "wednesday=" + vector_to_str(config.wednesday_done) + "\n";
-	config_file << "thursday=" + vector_to_str(config.thursday_done) + "\n";
-	config_file << "friday=" + vector_to_str(config.friday_done) + "\n";
-	config_file << "saturday=" + vector_to_str(config.saturday_done) + "\n";
-	config_file << "sunday=" + vector_to_str(config.sunday_done) + "\n";
+	config_file << "monday=" << vector_to_str(config.monday_done) << "\n";
+	config_file << "tuesday=" << vector_to_str(config.tuesday_done) << "\n";
+	config_file << "wednesday=" << vector_to_str(config.wednesday_done) << "\n";
+	config_file << "thursday=" << vector_to_str(config.thursday_done) << "\n";
+	config_file << "friday=" << vector_to_str(config.friday_done) << "\n";
+	config_file << "saturday=" << vector_to_str(config.saturday_done) << "\n";
+	config_file << "sunday=" << vector_to_str(config.sunday_done) << "\n";
 }
 
 /**
@@ -464,6 +476,55 @@ bool is_special_month(int month) {
 
 
 /**
+Takes the date information and ensures that it represents a valid date.
+day: [int] the day of the week since Sunday (0-6).
+date: [int] the date of the month (1-31).
+month: [int] the month of the year since January (0-11)
+year: [int] the year.
+*/
+void validate_date(int& day, int& date, int& month, int& year)
+{
+	// Ensure the day never goes above 6 (stays an offical day).
+	if (day > 6) {
+		day = 0;
+	}
+	// Account for February.
+	if (month == 1 && date > 28) {
+		// Check for leap year.
+		if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) {
+			if (date > 29) {
+				month++;
+				date = 1;
+			}
+		}
+		else {
+			month++;
+			date = 1;
+		}
+	}
+	// Ensure date is legal.
+	else if (date > 30) {
+		if (date > 31) {
+			// Starting a new year.
+			if (month == 11) {
+				month = 0;
+				date = 1;
+				year++;
+			}
+			else {
+				month++;
+				date = 1;
+			}
+		}
+		else if (!is_special_month(month)) {
+			month++;
+			date = 1;
+		}
+	}
+}
+
+
+/**
 Writes the data from the planner struct to the planner file.
 planner_file: [fstream&] the planner file stream.
 planner: [Planner&] the planner struct.
@@ -471,7 +532,7 @@ planner: [Planner&] the planner struct.
 void write_to_planner(fstream& planner_file, Planner& planner)
 {
 	int day, date, month, year;
-	string day_str;
+	string day_str, out;
 
 	// Get date information.
 	time_t now = time(0);
@@ -484,43 +545,17 @@ void write_to_planner(fstream& planner_file, Planner& planner)
 	year = time_info.tm_year + 1900;  // Year since 1900.
 
 	for (int i = 0; i < 7; i++) {
-		// Ensure the day never goes above 6 (stays an offical day).
-		if (day > 6) {
-			day = 0;
-		}
-		// Account for February.
-		if (month == 1 && date > 28) {
-			// Check for leap year.
-			if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) {
-				if (date > 29) {
-					month++;
-					date = 1;
-				}
-			}
-			else {
-				month++;
-				date = 1;
-			}
-		}
-		// Ensure date is legal.
-		if (date > 30) {
-			if (date > 31) {
-				month++;
-				date = 1;
-			}
-			else if (!is_special_month(month)){
-				month++;
-				date = 1;
-			}
-		}
+		// Ensure valid dates.
+		validate_date(day, date, month, year);
 		// Convert day to string.
 		day_str = day_to_str(day);
-		// Write to planner.
-		// Format: DAY (MONTH/DATE): Tasks.
-		planner_file << day_str + " (" + to_string(month) + "/" + to_string(day) + "): " + vector_to_str(planner.get_day(day_str));
+		// Write to planner. Format: DAY (MONTH/DATE): Tasks.
+		out = day_str + " (" + to_string(month) + "/" + to_string(day) + "): " + vector_to_str(planner.get_day(day_str));
+		planner_file << out << endl;
 		day++;
 		date++;
 	}
+	planner_file << "This is a test. I really hope this works." << endl;
 }
 
 
@@ -529,7 +564,7 @@ Entry point for the program.
 */
 int main()
 {
-	// Open critical files.
+	// Open files for reading.
 	fstream planner_file = open_file(PLANNER_FILE_PATH);
 	fstream config_file = open_file(CONFIG_FILE_PATH);
 	
@@ -538,15 +573,22 @@ int main()
 	// Parse planner file.
 	Planner planner_data = read_planner(planner_file);
 
+	// Close files.
+	config_file.close();
+	planner_file.close();
+
 	// Compare data between config and planner.
 	generate_data(config_data, planner_data);
+
+	// Open files for writing.
+	planner_file = open_file(PLANNER_FILE_PATH);
+	config_file = open_file(CONFIG_FILE_PATH);
 
 	// Write and close config file.
 	write_to_config(config_file, config_data);
 	config_file.close();
 
-
-
-	// Close all opened files.
+	// Write and close planner file.
+	write_to_planner(planner_file, planner_data);
 	planner_file.close();
 }

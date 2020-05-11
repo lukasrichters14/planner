@@ -27,5 +27,6 @@ string vector_to_str(vector<string> vec);
 void write_to_planner(fstream& planner_file, Planner& planner);
 string day_to_str(int day);
 bool is_special_month(int month);
+void validate_date(int& day, int& date, int& month, int& year);
 
 #endif

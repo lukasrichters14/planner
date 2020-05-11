@@ -146,5 +146,99 @@ namespace PlannerUnitTests
 			std::string str = "Luke, I, am, your, father";
 			Assert::AreEqual(str, vector_to_str(vec));
 		}
+
+		TEST_METHOD(TestValidateDate)
+		{
+			int day, date, month, year, day_a, date_a, month_a, year_a;
+			// Regular date, nothing should happen.
+			day = 1;
+			day_a = 1;
+			date = 11;
+			date_a = 11;
+			month = 4;
+			month_a = 4;
+			year = 2020;
+			year_a = 2020;
+			validate_date(day, date, month, year);
+			Assert::AreEqual(day, day_a);
+			Assert::AreEqual(date, date_a);
+			Assert::AreEqual(month, month_a);
+			Assert::AreEqual(year, year_a);
+
+			// Leap year in February, on February 29th 2020, should be a valid date.
+			day = 6;
+			day_a = 6;
+			date = 29;
+			date_a = 29;
+			month = 1;
+			month_a = 1;
+			year = 2020;
+			year_a = 2020;
+			validate_date(day, date, month, year);
+			Assert::AreEqual(day, day_a);
+			Assert::AreEqual(date, date_a);
+			Assert::AreEqual(month, month_a);
+			Assert::AreEqual(year, year_a);
+
+			// Not a leap year in February, on February 29th 2019, should not be a valid date.
+			day = 6;
+			day_a = 6;
+			date = 29;
+			date_a = 1;
+			month = 1;
+			month_a = 2;
+			year = 2019;
+			year_a = 2019;
+			validate_date(day, date, month, year);
+			Assert::AreEqual(day, day_a);
+			Assert::AreEqual(date, date_a);
+			Assert::AreEqual(month, month_a);
+			Assert::AreEqual(year, year_a);
+
+			// New year. December 32nd, 2020, should not be a valid date.
+			day = 6;
+			day_a = 6;
+			date = 32;
+			date_a = 1;
+			month = 11;
+			month_a = 0;
+			year = 2020;
+			year_a = 2021;
+			validate_date(day, date, month, year);
+			Assert::AreEqual(day, day_a);
+			Assert::AreEqual(date, date_a);
+			Assert::AreEqual(month, month_a);
+			Assert::AreEqual(year, year_a);
+
+			// June 31st, 2020, not a valid date.
+			day = 6;
+			day_a = 6;
+			date = 31;
+			date_a = 1;
+			month = 5;
+			month_a = 6;
+			year = 2020;
+			year_a = 2020;
+			validate_date(day, date, month, year);
+			Assert::AreEqual(day, day_a);
+			Assert::AreEqual(date, date_a);
+			Assert::AreEqual(month, month_a);
+			Assert::AreEqual(year, year_a);
+
+			// July 31st, 2020, valid date.
+			day = 6;
+			day_a = 6;
+			date = 31;
+			date_a = 31;
+			month = 6;
+			month_a = 6;
+			year = 2020;
+			year_a = 2020;
+			validate_date(day, date, month, year);
+			Assert::AreEqual(day, day_a);
+			Assert::AreEqual(date, date_a);
+			Assert::AreEqual(month, month_a);
+			Assert::AreEqual(year, year_a);
+		}
 	};
 }

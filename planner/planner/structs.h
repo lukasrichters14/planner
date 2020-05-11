@@ -73,6 +73,50 @@ struct Planner
 		else if (day == "SUN") {
 			return sunday;
 		}
+		return {};
+	}
+
+	/**
+	Appends the elements of to_append to the given day.
+	day: [string] the day to append to.
+	to_append: [vector<string>] the elements to append.
+	*/
+	void append_day(string day, vector<string> to_append) {
+		if (day == "MON") {
+			for (auto e : to_append) {
+				monday.push_back(e);
+			}
+		}
+		else if (day == "TUE") {
+			for (auto e : to_append) {
+				tuesday.push_back(e);
+			}
+		}
+		else if (day == "WED") {
+			for (auto e : to_append) {
+				wednesday.push_back(e);
+			}
+		}
+		else if (day == "THU") {
+			for (auto e : to_append) {
+				thursday.push_back(e);
+			}
+		}
+		else if (day == "FRI") {
+			for (auto e : to_append) {
+				friday.push_back(e);
+			}
+		}
+		else if (day == "SAT") {
+			for (auto e : to_append) {
+				saturday.push_back(e);
+			}
+		}
+		else if (day == "SUN") {
+			for (auto e : to_append) {
+				sunday.push_back(e);
+			}
+		}
 	}
 };
 
