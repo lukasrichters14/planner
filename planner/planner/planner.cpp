@@ -484,7 +484,7 @@ year: [int] the year.
 */
 void validate_date(int& day, int& date, int& month, int& year)
 {
-	// Ensure the day never goes above 6 (stays an offical day).
+	// Ensure the day never goes above 6 (stays an official day).
 	if (day > 6) {
 		day = 0;
 	}
