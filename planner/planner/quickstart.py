@@ -7,6 +7,7 @@ from google.auth.transport.requests import Request
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
+CREDENTIALS_FILE = "C:/Users/lukas/planner/planner/planner/credentials.json"
 
 
 def is_leap_year(year):
@@ -80,7 +81,7 @@ def main():
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
+                CREDENTIALS_FILE, SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
         with open('token.pickle', 'wb') as token:
@@ -88,23 +89,29 @@ def main():
 
     service = build('calendar', 'v3', credentials=creds)
 
-    # Call the Calendar API
+    # Current time.
     now = datetime.datetime.utcnow()
     # Max time is two weeks from now.
     max_time = get_max_time(now)
-    print(max_time)
     now = now.isoformat() + 'Z'  # 'Z' indicates UTC time
-    print('Getting the upcoming 10 events')
+    # Call the Calendar API
     events_result = service.events().list(calendarId='primary', timeMin=now,
                                           timeMax=max_time, singleEvents=True,
                                           orderBy='startTime').execute()
+    # Get the events from the API return.
     events = events_result.get('items', [])
 
-    if not events:
-        print('No upcoming events found.')
+    ret_str = ""
     for event in events:
-        # start = event['start'].get('dateTime', event['start'].get('date'))
-        print(event['summary'])
+        # Get date and format.
+        start = event['start'].get('date')
+        start = start[6:]
+        # Add the event and date to the string. Extra double quotes are placed to signify a single
+        # string for the command line.
+        # Format: Event (month-day).
+        ret_str += "\"" + event['summary'] + " (" + start + ")\" "
+
+    return ret_str
 
 
 if __name__ == '__main__':

@@ -529,7 +529,7 @@ Writes the data from the planner struct to the planner file.
 planner_file: [fstream&] the planner file stream.
 planner: [Planner&] the planner struct.
 */
-void write_to_planner(fstream& planner_file, Planner& planner)
+void write_to_planner(fstream& planner_file, Planner& planner, vector<string> g_cal_data)
 {
 	int day, date, month, year;
 	string day_str, out;
@@ -550,20 +550,52 @@ void write_to_planner(fstream& planner_file, Planner& planner)
 		// Convert day to string.
 		day_str = day_to_str(day);
 		// Write to planner. Format: DAY (MONTH/DATE): Tasks.
-		out = day_str + " (" + to_string(month) + "/" + to_string(day) + "): " + vector_to_str(planner.get_day(day_str));
+		out = day_str + " (" + to_string(month + 1) + "/" + to_string(date) + "): " + vector_to_str(planner.get_day(day_str));
 		planner_file << out << endl;
 		day++;
 		date++;
 	}
-	planner_file << "This is a test. I really hope this works." << endl;
+	
+	// Add Google Calendar data.
+	planner_file << "\nUpcoming Events:" << endl;
+	for (string str : g_cal_data) {
+		planner_file << str << endl;
+	}
+}
+
+
+/**
+Converts the arguments into a vector format.
+argc: [int] the number of arguements.
+argv: [char **] the command line arguments.
+Return: [vector<string>] the arguments as a string.
+*/
+vector<string> parse_args(int argc, char** argv)
+{
+	vector<string> vec;
+
+	// No arguments, just the program name.
+	if (argc < 2) {
+		return {};
+	}
+
+	// Add each argument to the vector.
+	for (int i = 1; i < argc; i++) {
+		vec.push_back(argv[i]);
+	}
+
+	return vec;
 }
 
 
 /**
 Entry point for the program.
 */
-int main()
+int main(int argc, char* argv[])
 {
+	// Parse command line arguments. This is string data from the google calandar API.
+	vector<string> g_cal_data = parse_args(argc, argv);
+
 	// Open files for reading.
 	fstream planner_file = open_file(PLANNER_FILE_PATH);
 	fstream config_file = open_file(CONFIG_FILE_PATH);
@@ -589,6 +621,6 @@ int main()
 	config_file.close();
 
 	// Write and close planner file.
-	write_to_planner(planner_file, planner_data);
+	write_to_planner(planner_file, planner_data, g_cal_data);
 	planner_file.close();
 }

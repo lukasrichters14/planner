@@ -1,2 +1,5 @@
 /.vs
 /planner/.vs
+/.idea
+/planner/planner/credentials.json
+/planner/planner/token.pickle
