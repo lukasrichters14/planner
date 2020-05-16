@@ -582,6 +582,7 @@ vector<string> parse_args(int argc, char** argv)
 	// Add each argument to the vector.
 	for (int i = 1; i < argc; i++) {
 		vec.push_back(argv[i]);
+		cout << argv[i] << endl;
 	}
 
 	return vec;
