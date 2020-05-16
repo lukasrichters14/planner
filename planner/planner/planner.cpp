@@ -370,14 +370,36 @@ void generate_data(Config& config, Planner& planner) {
 		}
 	}
 
-	// Set planner fields to what still needs to be done.
-	planner.monday = compare_vec(config.monday, config.monday_done);
-	planner.tuesday = compare_vec(config.tuesday, config.tuesday_done);
-	planner.wednesday = compare_vec(config.wednesday, config.wednesday_done);
-	planner.thursday = compare_vec(config.thursday, config.thursday_done);
-	planner.friday = compare_vec(config.friday, config.friday_done);
-	planner.saturday = compare_vec(config.saturday, config.saturday_done);
-	planner.sunday = compare_vec(config.sunday, config.sunday_done);
+	// Set planner fields to only user-added events not accounted for in the config file.
+	planner.monday = compare_vec(planner.monday, config.monday);
+	planner.tuesday = compare_vec(planner.tuesday, config.tuesday);
+	planner.wednesday = compare_vec(planner.wednesday, config.wednesday);
+	planner.thursday = compare_vec(planner.thursday, config.thursday);
+	planner.friday = compare_vec(planner.friday, config.friday);
+	planner.saturday = compare_vec(planner.saturday, config.saturday);
+	planner.sunday = compare_vec(planner.sunday, config.sunday);
+
+	// Set planner fields to what still needs to be done + whatever was already read in.
+	vector<string> temp_vec = compare_vec(config.monday, config.monday_done);
+	planner.monday.insert(planner.monday.end(), temp_vec.begin(), temp_vec.end());
+	
+	temp_vec = compare_vec(config.tuesday, config.tuesday_done);
+	planner.tuesday.insert(planner.tuesday.end(), temp_vec.begin(), temp_vec.end());
+	
+	temp_vec = compare_vec(config.wednesday, config.wednesday_done);
+	planner.wednesday.insert(planner.wednesday.end(), temp_vec.begin(), temp_vec.end());
+
+	temp_vec = compare_vec(config.thursday, config.thursday_done);
+	planner.thursday.insert(planner.thursday.end(), temp_vec.begin(), temp_vec.end());
+
+	temp_vec = compare_vec(config.friday, config.friday_done);
+	planner.friday.insert(planner.friday.end(), temp_vec.begin(), temp_vec.end());
+
+	temp_vec = compare_vec(config.saturday, config.saturday_done);
+	planner.saturday.insert(planner.saturday.end(), temp_vec.begin(), temp_vec.end());
+
+	temp_vec = compare_vec(config.sunday, config.sunday_done);
+	planner.sunday.insert(planner.sunday.end(), temp_vec.begin(), temp_vec.end());
 
 	// Add anything that was not finished yesterday (if applicable).
 	planner.append_day(day_str, unfinished);
@@ -610,18 +632,30 @@ int main(int argc, char* argv[])
 	config_file.close();
 	planner_file.close();
 
-	// Compare data between config and planner.
-	generate_data(config_data, planner_data);
+	// Special case allowing planner file to be initialized with config data.
+	if (argc >= 2 && g_cal_data[0] == "init") {
+		planner_data.monday = config_data.monday;
+		planner_data.tuesday = config_data.tuesday;
+		planner_data.wednesday = config_data.wednesday;
+		planner_data.thursday = config_data.thursday;
+		planner_data.friday = config_data.friday;
+		planner_data.saturday = config_data.saturday;
+		planner_data.sunday = config_data.sunday;
+	}
+	else {
+		// Compare data between config and planner.
+		generate_data(config_data, planner_data);
+	}
 
-	// Open files for writing.
-	planner_file = open_file(PLANNER_FILE_PATH);
-	config_file = open_file(CONFIG_FILE_PATH);
+		// Open files for writing.
+		planner_file = open_file(PLANNER_FILE_PATH);
+		config_file = open_file(CONFIG_FILE_PATH);
 
-	// Write and close config file.
-	write_to_config(config_file, config_data);
-	config_file.close();
+		// Write and close config file.
+		write_to_config(config_file, config_data);
+		config_file.close();
 
-	// Write and close planner file.
-	write_to_planner(planner_file, planner_data, g_cal_data);
-	planner_file.close();
+		// Write and close planner file.
+		write_to_planner(planner_file, planner_data, g_cal_data);
+		planner_file.close();
 }
